@@ -1,7 +1,7 @@
 rvm: "1.9.2"
 before_install:
   - git submodule update --init --recursive
-  - rvm use 1.9.2 --install --binary --fuzzy
+  - rvm use 1.9.2 --install
   - export BUNDLE_GEMFILE=$PWD/Gemfile
   - ruby --version
   - gem --version
