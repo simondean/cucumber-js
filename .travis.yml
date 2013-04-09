@@ -1,5 +1,13 @@
 rvm: "1.9.2"
-before_script: "git submodule update --init && npm install"
+before_install:
+  - git submodule update --init --recursive
+  - rvm use 1.9.2 --install --binary --fuzzy
+  - export BUNDLE_GEMFILE=$PWD/Gemfile
+  - ruby --version
+  - gem --version
+  - rvm --version
+  - bundle install
+
 script: "rake"
 
 language: node_js
