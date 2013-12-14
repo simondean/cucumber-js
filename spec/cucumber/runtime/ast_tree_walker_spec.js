@@ -232,7 +232,15 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
 
         it("instructs the scenario to accept the tree walker as a visitor", function() {
           hookedUpFunction(hookedUpFunctionCallback);
-          expect(scenario.acceptVisitor).toHaveBeenCalledWith(treeWalker, hookedUpFunctionCallback);
+          expect(scenario.acceptVisitor).toHaveBeenCalled();
+          expect(scenario.acceptVisitor).toHaveBeenCalledWithValueAsNthParameter(treeWalker, 1);
+        });
+
+        it("calls back", function() {
+          hookedUpFunction(hookedUpFunctionCallback);
+          var acceptVisitorCallback = scenario.acceptVisitor.mostRecentCall.args[1];
+          acceptVisitorCallback();
+          expect(hookedUpFunctionCallback).toHaveBeenCalled();
         });
       });
 
@@ -633,6 +641,10 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
   });
 
   describe("isSkippingSteps() [witnessFailedSteps(), witnessPendingSteps(), witnessUndefinedStep(), witnessNewScenario()]", function() {
+    beforeEach(function() {
+      treeWalker.witnessNewScenario();
+    });
+
     it("returns false when no failed, pending or undefined steps were encountered", function() {
       expect(treeWalker.isSkippingSteps()).toBeFalsy();
     });
