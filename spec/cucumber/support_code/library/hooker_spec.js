@@ -86,12 +86,11 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
   });
 
   describe("hookUpFunction()", function() {
-    var scenarioFunction, world, scenario;
+    var scenarioFunction, world;
 
     beforeEach(function() {
       scenarioFunction = createSpy("scenario function");
-      scenario     = createSpy("scenario");
-      world        = createSpy("world instance");
+      world            = createSpy("world instance");
     });
 
     it("returns a function", function() {
@@ -99,11 +98,11 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
     });
 
     describe("returned function", function() {
-      var returnedFunction, apiScenario, callback, postScenarioAroundHookCallbacks;
+      var returnedFunction, scenario, callback, postScenarioAroundHookCallbacks;
 
       beforeEach(function() {
-        returnedFunction                = hooker.hookUpFunction(scenarioFunction, scenario, world);
-        apiScenario                     = createSpy("api scenario");
+        returnedFunction                = hooker.hookUpFunction(scenarioFunction, world);
+        scenario                        = createSpy("scenario");
         callback                        = createSpy("callback");
         postScenarioAroundHookCallbacks = createSpy("post-scenario around hook callbacks");
         spyOnStub(aroundHooks, 'forEach');
@@ -112,12 +111,12 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
       });
 
       it("instantiates a collection for the post-scenario around hook callbacks", function() {
-        returnedFunction(apiScenario, callback);
+        returnedFunction(scenario, callback);
         expect(Cucumber.Type.Collection).toHaveBeenCalled();
       });
 
       it("iterates over the around hooks", function() {
-        returnedFunction(apiScenario, callback);
+        returnedFunction(scenario, callback);
         expect(aroundHooks.forEach).toHaveBeenCalled();
         expect(aroundHooks.forEach).toHaveBeenCalledWithAFunctionAsNthParameter(1);
         expect(aroundHooks.forEach).toHaveBeenCalledWithAFunctionAsNthParameter(2);
@@ -129,7 +128,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
         beforeEach(function() {
           aroundHook          = createSpyWithStubs("around hook", {invokeBesideScenario: null});
           iterationCallback   = createSpy("iteration callback");
-          returnedFunction(apiScenario, callback);
+          returnedFunction(scenario, callback);
           aroundHookIteration = aroundHooks.forEach.mostRecentCall.args[0];
         });
 
@@ -138,8 +137,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
           expect(aroundHook.invokeBesideScenario).toHaveBeenCalled();
           expect(aroundHook.invokeBesideScenario).toHaveBeenCalledWithValueAsNthParameter(scenario, 1);
           expect(aroundHook.invokeBesideScenario).toHaveBeenCalledWithValueAsNthParameter(world, 2);
-          expect(aroundHook.invokeBesideScenario).toHaveBeenCalledWithValueAsNthParameter(apiScenario, 3);
-          expect(aroundHook.invokeBesideScenario).toHaveBeenCalledWithAFunctionAsNthParameter(4);
+          expect(aroundHook.invokeBesideScenario).toHaveBeenCalledWithAFunctionAsNthParameter(3);
         });
 
         describe("on around hook invocation completion", function() {
@@ -147,7 +145,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
 
           beforeEach(function() {
             aroundHookIteration(aroundHook, iterationCallback);
-            invocationCompletionCallback   = aroundHook.invokeBesideScenario.mostRecentCall.args[3];
+            invocationCompletionCallback   = aroundHook.invokeBesideScenario.mostRecentCall.args[2];
             postScenarioAroundHookCallback = createSpy("post-scenario around hook callback");
             spyOnStub(postScenarioAroundHookCallbacks, 'unshift');
           });
@@ -168,7 +166,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
         var aroundHooksLoopCallback;
 
         beforeEach(function() {
-          returnedFunction(apiScenario, callback);
+          returnedFunction(scenario, callback);
           aroundHooksLoopCallback = aroundHooks.forEach.mostRecentCall.args[1];
           spyOnStub(beforeHooks, 'forEach');
         });
@@ -192,7 +190,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
 
           it("invokes the hook beside the scenario", function() {
             forEachBeforeHookFunction(beforeHook, forEachBeforeHookFunctionCallback);
-            expect(beforeHook.invokeBesideScenario).toHaveBeenCalledWith(scenario, world, apiScenario, forEachBeforeHookFunctionCallback);
+            expect(beforeHook.invokeBesideScenario).toHaveBeenCalledWith(scenario, world, forEachBeforeHookFunctionCallback);
           });
         });
 
@@ -211,17 +209,16 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
           });
 
           describe("on scenario function completion", function() {
-            var scenarioFunctionCallback, updatedApiScenario;
+            var scenarioFunctionCallback;
 
             beforeEach(function() {
               beforeHooksCompletionCallback();
               scenarioFunctionCallback = scenarioFunction.mostRecentCall.args[0];
-              updatedApiScenario       = createSpy("updated api scenario");
               spyOnStub(afterHooks, 'forEach');
             });
 
             it("iterates over the after hooks", function() {
-              scenarioFunctionCallback(updatedApiScenario);
+              scenarioFunctionCallback();
               expect(afterHooks.forEach).toHaveBeenCalled();
               expect(afterHooks.forEach).toHaveBeenCalledWithAFunctionAsNthParameter(1);
               expect(afterHooks.forEach).toHaveBeenCalledWithAFunctionAsNthParameter(2);
@@ -231,7 +228,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
               var afterHook, forEachAfterHookFunction, forEachAfterHookFunctionCallback;
 
               beforeEach(function() {
-                scenarioFunctionCallback(updatedApiScenario);
+                scenarioFunctionCallback();
                 forEachAfterHookFunction = afterHooks.forEach.mostRecentCall.args[0];
                 forEachAfterHookFunctionCallback = createSpy("for each after hook iteration callback");
                 afterHook = createSpyWithStubs("after hook", {invokeBesideScenario: null});
@@ -239,7 +236,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
 
               it("invokes the hook beside the scenario", function() {
                 forEachAfterHookFunction(afterHook, forEachAfterHookFunctionCallback);
-                expect(afterHook.invokeBesideScenario).toHaveBeenCalledWith(scenario, world, updatedApiScenario, forEachAfterHookFunctionCallback);
+                expect(afterHook.invokeBesideScenario).toHaveBeenCalledWith(scenario, world, forEachAfterHookFunctionCallback);
               });
             });
 
@@ -247,7 +244,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
               var afterHooksCompletionCallback;
 
               beforeEach(function() {
-                scenarioFunctionCallback(updatedApiScenario);
+                scenarioFunctionCallback();
                 afterHooksCompletionCallback = afterHooks.forEach.mostRecentCall.args[1];
                 spyOnStub(postScenarioAroundHookCallbacks, 'forEach');
               });
@@ -269,27 +266,10 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
                   postScenarioAroundHookIterationCallback = createSpy("post-scenario around hook iteration callback");
                 });
 
-                it("calls the post-scenario around hook callback and passes it the updated scenario", function() {
+                it("calls the post-scenario around hook callback", function() {
                   postScenarioAroundHookIteration(postScenarioAroundHookCallback, postScenarioAroundHookIterationCallback);
-                  expect(postScenarioAroundHookCallback).toHaveBeenCalledWith(updatedApiScenario, postScenarioAroundHookIterationCallback);
+                  expect(postScenarioAroundHookCallback).toHaveBeenCalledWith(postScenarioAroundHookIterationCallback);
                   expect(postScenarioAroundHookCallback.mostRecentCall.object).toBe(world);
-                });
-
-                describe("when the post-scenario around hook callback only accepts one parameter", function () {
-                  var postScenarioAroundHookCallbackObservingWrapper;
-
-                  beforeEach(function () {
-                    postScenarioAroundHookCallbackObservingWrapper = function (callback) {
-                      postScenarioAroundHookCallback.apply(this, arguments);
-                    };
-                  });
-
-                  it("doesn't pass the updated scenario to the post-scenario around hook callback", function() {
-                    postScenarioAroundHookIteration(postScenarioAroundHookCallbackObservingWrapper, postScenarioAroundHookIterationCallback);
-                    expect(postScenarioAroundHookCallback).not.toHaveBeenCalledWith(updatedApiScenario, postScenarioAroundHookIterationCallback);
-                    expect(postScenarioAroundHookCallback).toHaveBeenCalledWith(postScenarioAroundHookIterationCallback);
-                    expect(postScenarioAroundHookCallback.mostRecentCall.object).toBe(world);
-                  });
                 });
               });
             });

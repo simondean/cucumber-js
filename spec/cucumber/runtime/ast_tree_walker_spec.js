@@ -216,8 +216,7 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
         worldInstantiationCompletionCallback(world);
         expect(supportCodeLibrary.hookUpFunction).toHaveBeenCalled();
         expect(supportCodeLibrary.hookUpFunction).toHaveBeenCalledWithAFunctionAsNthParameter(1);
-        expect(supportCodeLibrary.hookUpFunction).toHaveBeenCalledWithValueAsNthParameter(scenario, 2);
-        expect(supportCodeLibrary.hookUpFunction).toHaveBeenCalledWithValueAsNthParameter(world, 3);
+        expect(supportCodeLibrary.hookUpFunction).toHaveBeenCalledWithValueAsNthParameter(world, 2);
       });
 
       describe("hooked up function", function() {
