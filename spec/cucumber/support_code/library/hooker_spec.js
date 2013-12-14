@@ -209,16 +209,17 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
           });
 
           describe("on scenario function completion", function() {
-            var scenarioFunctionCallback;
+            var scenarioFunctionCallback, updatedScenario;
 
             beforeEach(function() {
               beforeHooksCompletionCallback();
               scenarioFunctionCallback = scenarioFunction.mostRecentCall.args[0];
+              updatedScenario          = createSpy("updated scenario");
               spyOnStub(afterHooks, 'forEach');
             });
 
             it("iterates over the after hooks", function() {
-              scenarioFunctionCallback();
+              scenarioFunctionCallback(updatedScenario);
               expect(afterHooks.forEach).toHaveBeenCalled();
               expect(afterHooks.forEach).toHaveBeenCalledWithAFunctionAsNthParameter(1);
               expect(afterHooks.forEach).toHaveBeenCalledWithAFunctionAsNthParameter(2);
@@ -228,7 +229,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
               var afterHook, forEachAfterHookFunction, forEachAfterHookFunctionCallback;
 
               beforeEach(function() {
-                scenarioFunctionCallback();
+                scenarioFunctionCallback(updatedScenario);
                 forEachAfterHookFunction = afterHooks.forEach.mostRecentCall.args[0];
                 forEachAfterHookFunctionCallback = createSpy("for each after hook iteration callback");
                 afterHook = createSpyWithStubs("after hook", {invokeBesideScenario: null});
@@ -236,7 +237,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
 
               it("invokes the hook beside the scenario", function() {
                 forEachAfterHookFunction(afterHook, forEachAfterHookFunctionCallback);
-                expect(afterHook.invokeBesideScenario).toHaveBeenCalledWith(scenario, world, forEachAfterHookFunctionCallback);
+                expect(afterHook.invokeBesideScenario).toHaveBeenCalledWith(updatedScenario, world, forEachAfterHookFunctionCallback);
               });
             });
 
@@ -244,7 +245,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
               var afterHooksCompletionCallback;
 
               beforeEach(function() {
-                scenarioFunctionCallback();
+                scenarioFunctionCallback(updatedScenario);
                 afterHooksCompletionCallback = afterHooks.forEach.mostRecentCall.args[1];
                 spyOnStub(postScenarioAroundHookCallbacks, 'forEach');
               });
@@ -268,7 +269,7 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
 
                 it("calls the post-scenario around hook callback", function() {
                   postScenarioAroundHookIteration(postScenarioAroundHookCallback, postScenarioAroundHookIterationCallback);
-                  expect(postScenarioAroundHookCallback).toHaveBeenCalledWith(postScenarioAroundHookIterationCallback);
+                  expect(postScenarioAroundHookCallback).toHaveBeenCalledWith(updatedScenario, postScenarioAroundHookIterationCallback);
                   expect(postScenarioAroundHookCallback.mostRecentCall.object).toBe(world);
                 });
               });
