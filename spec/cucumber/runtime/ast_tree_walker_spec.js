@@ -235,7 +235,7 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
           expect(scenario.acceptVisitor).toHaveBeenCalledWithValueAsNthParameter(treeWalker, 1);
         });
 
-        it("calls back", function() {
+        it("calls back to the after and around hooks and passes the scenario", function() {
           hookedUpFunction(hookedUpFunctionCallback);
           var acceptVisitorCallback = scenario.acceptVisitor.mostRecentCall.args[1];
           acceptVisitorCallback();
@@ -251,6 +251,23 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
         expect(treeWalker.broadcastEventAroundUserFunction).toHaveBeenCalledWithAFunctionAsNthParameter(2);
         expect(treeWalker.broadcastEventAroundUserFunction).toHaveBeenCalledWithValueAsNthParameter(callback, 3);
       });
+
+      describe("on broadcast of the visit of the scenario", function() {
+        var userFunction, userFunctionCallback;
+
+        beforeEach(function() {
+          worldInstantiationCompletionCallback(world);
+          userFunction         = treeWalker.broadcastEventAroundUserFunction.mostRecentCall.args[1];
+          userFunctionCallback = createSpy("user function callback");
+        });
+
+        it("passes the scenario to hooked up function", function() {
+          userFunction(userFunctionCallback);
+          expect(hookedUpScenarioVisit).toHaveBeenCalled();
+          expect(hookedUpScenarioVisit).toHaveBeenCalledWithValueAsNthParameter(scenario, 1);
+          expect(hookedUpScenarioVisit).toHaveBeenCalledWithValueAsNthParameter(userFunctionCallback, 2);
+        });
+      })
     });
   });
 
