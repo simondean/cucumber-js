@@ -267,10 +267,27 @@ describe("Cucumber.SupportCode.Library.Hooker", function() {
                   postScenarioAroundHookIterationCallback = createSpy("post-scenario around hook iteration callback");
                 });
 
-                it("calls the post-scenario around hook callback", function() {
+                it("calls the post-scenario around hook callback and passes it the updated scenario", function() {
                   postScenarioAroundHookIteration(postScenarioAroundHookCallback, postScenarioAroundHookIterationCallback);
                   expect(postScenarioAroundHookCallback).toHaveBeenCalledWith(updatedScenario, postScenarioAroundHookIterationCallback);
                   expect(postScenarioAroundHookCallback.mostRecentCall.object).toBe(world);
+                });
+
+                describe("when the post-scenario around hook callback only accepts one parameter", function () {
+                  var postScenarioAroundHookCallbackObservingWrapper;
+
+                  beforeEach(function () {
+                    postScenarioAroundHookCallbackObservingWrapper = function (callback) {
+                      postScenarioAroundHookCallback.apply(this, arguments);
+                    };
+                  });
+
+                  it("doesn't pass the updated scenario to the post-scenario around hook callback", function() {
+                    postScenarioAroundHookIteration(postScenarioAroundHookCallbackObservingWrapper, postScenarioAroundHookIterationCallback);
+                    expect(postScenarioAroundHookCallback).not.toHaveBeenCalledWith(updatedScenario, postScenarioAroundHookIterationCallback);
+                    expect(postScenarioAroundHookCallback).toHaveBeenCalledWith(postScenarioAroundHookIterationCallback);
+                    expect(postScenarioAroundHookCallback.mostRecentCall.object).toBe(world);
+                  });
                 });
               });
             });

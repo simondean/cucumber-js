@@ -240,6 +240,7 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
           var acceptVisitorCallback = scenario.acceptVisitor.mostRecentCall.args[1];
           acceptVisitorCallback();
           expect(hookedUpFunctionCallback).toHaveBeenCalled();
+          expect(hookedUpFunctionCallback).toHaveBeenCalledWithValueAsNthParameter(scenario, 1);
         });
       });
 
