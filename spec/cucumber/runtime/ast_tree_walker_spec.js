@@ -246,7 +246,10 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
 
       it("broadcasts the visit of the scenario", function() {
         worldInstantiationCompletionCallback(world);
-        expect(treeWalker.broadcastEventAroundUserFunction).toHaveBeenCalledWith(event, hookedUpScenarioVisit, callback);
+        expect(treeWalker.broadcastEventAroundUserFunction).toHaveBeenCalled();
+        expect(treeWalker.broadcastEventAroundUserFunction).toHaveBeenCalledWithValueAsNthParameter(event, 1);
+        expect(treeWalker.broadcastEventAroundUserFunction).toHaveBeenCalledWithAFunctionAsNthParameter(2);
+        expect(treeWalker.broadcastEventAroundUserFunction).toHaveBeenCalledWithValueAsNthParameter(callback, 3);
       });
     });
   });

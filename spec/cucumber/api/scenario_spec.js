@@ -2,7 +2,7 @@ require('../../support/spec_helper');
 
 describe("Cucumber.Api.Scenario", function() {
   var Cucumber = requireLib('cucumber');
-  var scenario, keyword, name, description, uri, line, isFailed, isPending, isSuccessful, isUndefined;
+  var scenario, keyword, name, description, uri, line, tags, isFailed, isPending, isSuccessful, isUndefined;
 
   beforeEach(function() {
     keyword      = createSpy("scenario keyword");
@@ -10,6 +10,7 @@ describe("Cucumber.Api.Scenario", function() {
     description  = createSpy("scenario description");
     uri          = createSpy("uri");
     line         = createSpy("starting scenario line number");
+    tags         = createSpy("scenario tags");
     isFailed     = createSpy("is failed");
     isPending    = createSpy("is pending");
     isSuccessful = createSpy("is successful");
@@ -20,6 +21,7 @@ describe("Cucumber.Api.Scenario", function() {
       description: description,
       uri: uri,
       line: line,
+      tags: tags,
       isFailed: isFailed,
       isPending: isPending,
       isSuccessful: isSuccessful,
@@ -54,6 +56,12 @@ describe("Cucumber.Api.Scenario", function() {
   describe("getLine()", function() {
     it("returns the line on which the scenario starts", function() {
       expect(scenario.getLine()).toBe(line);
+    });
+  });
+
+  describe("getTags()", function() {
+    it("returns the tags on the scenario, including inherited tags", function() {
+      expect(scenario.getTags()).toBe(tags);
     });
   });
 
