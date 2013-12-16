@@ -17,12 +17,12 @@ describe("Cucumber.Api.Scenario", function() {
     isUndefined = createSpy("is undefined");
     scenario = Cucumber.Api.Scenario({
       scenario: {
-        keyword: keyword,
-        name: name,
-        description: description,
-        uri: uri,
-        line: line,
-        tags: tags
+        getKeyword: function() { return keyword; },
+        getName: function() { return name; },
+        getDescription: function() { return description; },
+        getUri: function() { return uri; },
+        getLine: function() { return line; },
+        getTags: function() { return tags; }
       },
       isFailed: isFailed,
       isPending: isPending,

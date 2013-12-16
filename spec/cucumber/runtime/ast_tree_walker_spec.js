@@ -220,12 +220,14 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
       });
 
       describe("hooked up function", function() {
-        var hookedUpFunction, hookedUpFunctionCallback;
+        var hookedUpFunction, hookedUpFunctionCallback, wrappedScenario;
 
         beforeEach(function() {
           worldInstantiationCompletionCallback(world);
           hookedUpFunction         = supportCodeLibrary.hookUpFunction.mostRecentCall.args[0];
           hookedUpFunctionCallback = createSpy("hooked up function callback");
+          wrappedScenario          = createSpy("wrapped scenario");
+          spyOn(treeWalker, 'wrapScenario').andReturn(wrappedScenario);
           spyOnStub(scenario, 'acceptVisitor');
         });
 
@@ -240,7 +242,7 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
           var acceptVisitorCallback = scenario.acceptVisitor.mostRecentCall.args[1];
           acceptVisitorCallback();
           expect(hookedUpFunctionCallback).toHaveBeenCalled();
-          expect(hookedUpFunctionCallback).toHaveBeenCalledWithValueAsNthParameter(scenario, 1);
+          expect(hookedUpFunctionCallback).toHaveBeenCalledWithValueAsNthParameter(wrappedScenario, 1);
         });
       });
 
@@ -253,18 +255,20 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
       });
 
       describe("on broadcast of the visit of the scenario", function() {
-        var userFunction, userFunctionCallback;
+        var userFunction, userFunctionCallback, wrappedScenario;
 
         beforeEach(function() {
           worldInstantiationCompletionCallback(world);
           userFunction         = treeWalker.broadcastEventAroundUserFunction.mostRecentCall.args[1];
           userFunctionCallback = createSpy("user function callback");
+          wrappedScenario          = createSpy("wrapped scenario");
+          spyOn(treeWalker, 'wrapScenario').andReturn(wrappedScenario);
         });
 
         it("passes the scenario to hooked up function", function() {
           userFunction(userFunctionCallback);
           expect(hookedUpScenarioVisit).toHaveBeenCalled();
-          expect(hookedUpScenarioVisit).toHaveBeenCalledWithValueAsNthParameter(scenario, 1);
+          expect(hookedUpScenarioVisit).toHaveBeenCalledWithValueAsNthParameter(wrappedScenario, 1);
           expect(hookedUpScenarioVisit).toHaveBeenCalledWithValueAsNthParameter(userFunctionCallback, 2);
         });
       })
