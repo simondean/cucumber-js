@@ -67,19 +67,19 @@ describe("Cucumber.Api.Scenario", function() {
     });
   });
 
-  it("is not failed", function() {
+  it("is failed", function() {
     expect(scenario.isFailed()).toBe(isFailed);
   });
 
-  it("is not pending", function() {
+  it("is pending", function() {
     expect(scenario.isPending()).toBe(isPending);
   });
 
-  it("is not successful", function () {
+  it("is successful", function () {
     expect(scenario.isSuccessful()).toBe(isSuccessful);
   });
 
-  it("is not undefined", function() {
+  it("is undefined", function() {
     expect(scenario.isUndefined()).toBe(isUndefined);
   });
 });
