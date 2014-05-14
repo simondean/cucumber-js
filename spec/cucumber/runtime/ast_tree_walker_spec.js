@@ -261,7 +261,7 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
           worldInstantiationCompletionCallback(world);
           userFunction         = treeWalker.broadcastEventAroundUserFunction.mostRecentCall.args[1];
           userFunctionCallback = createSpy("user function callback");
-          wrappedScenario          = createSpy("wrapped scenario");
+          wrappedScenario      = createSpy("wrapped scenario");
           spyOn(treeWalker, 'wrapScenario').andReturn(wrappedScenario);
         });
 

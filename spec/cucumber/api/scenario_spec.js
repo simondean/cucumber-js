@@ -14,7 +14,7 @@ describe("Cucumber.Api.Scenario", function() {
     isFailed     = createSpy("is failed");
     isPending    = createSpy("is pending");
     isSuccessful = createSpy("is successful");
-    isUndefined = createSpy("is undefined");
+    isUndefined  = createSpy("is undefined");
     scenario = Cucumber.Api.Scenario({
       scenario: {
         getKeyword: function() { return keyword; },
