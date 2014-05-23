@@ -87,13 +87,14 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
   });
 
   describe("invoke()", function () {
-    var step, world, callback;
+    var step, world, scenario, callback;
     var parameters, exceptionHandler;
     var timestamp = 0;
 
     beforeEach(function () {
       step             = createSpy("step");
       world            = createSpy("world");
+      scenario         = createSpyObj("scenario", ["getAttachments"]);
       callback         = createSpy("callback");
       parameters       = createSpy("code execution parameters");
       exceptionHandler = createSpy("exception handler");
@@ -124,28 +125,29 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
     });
 
     it("builds the step invocation parameters", function () {
-      stepDefinition.invoke(step, world, callback);
+      stepDefinition.invoke(step, world, scenario, callback);
       expect(stepDefinition.buildInvocationParameters).toHaveBeenCalled();
       expect(stepDefinition.buildInvocationParameters).toHaveBeenCalledWithValueAsNthParameter(step, 1);
-      expect(stepDefinition.buildInvocationParameters).toHaveBeenCalledWithAFunctionAsNthParameter(2);
+      expect(stepDefinition.buildInvocationParameters).toHaveBeenCalledWithValueAsNthParameter(scenario, 2);
+      expect(stepDefinition.buildInvocationParameters).toHaveBeenCalledWithAFunctionAsNthParameter(3);
     });
 
     it("builds an exception handler for the code callback", function () {
-      stepDefinition.invoke(step, world, callback);
+      stepDefinition.invoke(step, world, scenario, callback);
       expect(stepDefinition.buildExceptionHandlerToCodeCallback).toHaveBeenCalledWithAFunctionAsNthParameter(1);
 
-      var codeExecutionCallbackPassedToParameterBuilder = stepDefinition.buildInvocationParameters.mostRecentCall.args[1];
+      var codeExecutionCallbackPassedToParameterBuilder = stepDefinition.buildInvocationParameters.mostRecentCall.args[2];
       var codeExecutionCallbackPassedToExceptionHandlerBuilder = stepDefinition.buildExceptionHandlerToCodeCallback.mostRecentCall.args[0];
       expect(codeExecutionCallbackPassedToExceptionHandlerBuilder).toBe(codeExecutionCallbackPassedToParameterBuilder);
     });
 
     it("registers the exception handler for uncaught exceptions", function () {
-      stepDefinition.invoke(step, world, callback);
+      stepDefinition.invoke(step, world, scenario, callback);
       expect(Cucumber.Util.Exception.registerUncaughtExceptionHandler).toHaveBeenCalledWith(exceptionHandler);
     });
 
     it("calls the step definition code with the parameters and World as 'this'", function () {
-      stepDefinition.invoke(step, world, callback);
+      stepDefinition.invoke(step, world, scenario, callback);
       expect(stepDefinitionCode.apply).toHaveBeenCalledWith(world, parameters);
     });
 
@@ -154,8 +156,8 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
       var successfulStepResult;
 
       beforeEach(function () {
-        stepDefinition.invoke(step, world, callback);
-        codeExecutionCallback = stepDefinition.buildInvocationParameters.mostRecentCall.args[1];
+        stepDefinition.invoke(step, world, scenario, callback);
+        codeExecutionCallback = stepDefinition.buildInvocationParameters.mostRecentCall.args[2];
         successfulStepResult = createSpy("successful step result");
         spyOn(Cucumber.Runtime, 'SuccessfulStepResult').andReturn(successfulStepResult);
         spyOn(Cucumber.Util.Exception, 'unregisterUncaughtExceptionHandler');
@@ -297,7 +299,7 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
       });
 
       it("handles the exception with the exception handler", function () {
-        stepDefinition.invoke(step, world, callback);
+        stepDefinition.invoke(step, world, scenario, callback);
         expect(exceptionHandler).toHaveBeenCalledWith(failureException);
       });
     });
@@ -305,7 +307,7 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
 
   describe("buildInvocationParameters()", function () {
     var patternRegexp, step, stepName, stepAttachment, stepAttachmentContents;
-    var matches, callback;
+    var matches, scenario, callback;
 
     beforeEach(function () {
       stepName               = createSpy("step name to match");
@@ -313,33 +315,34 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
       patternRegexp          = createSpyWithStubs("pattern regexp", {test: matches});
       stepAttachmentContents = createSpy("step attachment contents");
       step                   = createSpyWithStubs("step", {hasAttachment: null, getName: stepName, getAttachmentContents: stepAttachmentContents});
+      scenario               = createSpy("scenario");
       callback               = createSpy("callback");
       spyOn(stepDefinition, 'getPatternRegexp').andReturn(patternRegexp);
       spyOnStub(patternRegexp, 'exec').andReturn(matches);
     });
 
     it("gets the step name", function () {
-      stepDefinition.buildInvocationParameters(step, callback);
+      stepDefinition.buildInvocationParameters(step, scenario, callback);
       expect(step.getName).toHaveBeenCalled();
     });
 
     it("gets the pattern regexp", function () {
-      stepDefinition.buildInvocationParameters(step, callback);
+      stepDefinition.buildInvocationParameters(step, scenario, callback);
       expect(stepDefinition.getPatternRegexp).toHaveBeenCalled();
     });
 
     it("executes the pattern regexp against the step name", function () {
-      stepDefinition.buildInvocationParameters(step, callback);
+      stepDefinition.buildInvocationParameters(step, scenario, callback);
       expect(patternRegexp.exec).toHaveBeenCalledWith(stepName);
     });
 
     it("removes the whole matched string of the regexp result array (to only keep matching groups)", function () {
-      stepDefinition.buildInvocationParameters(step, callback);
+      stepDefinition.buildInvocationParameters(step, scenario, callback);
       expect(matches.shift).toHaveBeenCalled();
     });
 
     it("checks whether the step has an attachment or not", function () {
-      stepDefinition.buildInvocationParameters(step, callback);
+      stepDefinition.buildInvocationParameters(step, scenario, callback);
       expect(step.hasAttachment).toHaveBeenCalled();
     });
 
@@ -349,12 +352,12 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
       });
 
       it("gets the attachment contents", function () {
-        stepDefinition.buildInvocationParameters(step, callback);
+        stepDefinition.buildInvocationParameters(step, scenario, callback);
         expect(step.getAttachmentContents).toHaveBeenCalled();
       });
 
       it("adds the attachment contents to the parameter array", function () {
-        stepDefinition.buildInvocationParameters(step, callback);
+        stepDefinition.buildInvocationParameters(step, scenario, callback);
         expect(matches.push).toHaveBeenCalledWith(stepAttachmentContents);
       });
     });
@@ -365,23 +368,23 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
       });
 
       it("does not get the attachment contents", function () {
-        stepDefinition.buildInvocationParameters(step, callback);
+        stepDefinition.buildInvocationParameters(step, scenario, callback);
         expect(step.getAttachmentContents).not.toHaveBeenCalled();
       });
 
       it("does not add the attachement contents to the parameter array", function () {
-        stepDefinition.buildInvocationParameters(step, callback);
+        stepDefinition.buildInvocationParameters(step, scenario, callback);
         expect(matches.push.callCount).toBe(1);
       });
     });
 
     it("adds the callback to the parameter array", function () {
-      stepDefinition.buildInvocationParameters(step, callback);
+      stepDefinition.buildInvocationParameters(step, scenario, callback);
       expect(matches.push).toHaveBeenCalledWith(callback);
     });
 
     it("returns the parameters", function () {
-      expect(stepDefinition.buildInvocationParameters(step, callback)).toBe(matches);
+      expect(stepDefinition.buildInvocationParameters(step, scenario, callback)).toBe(matches);
     });
   });
 
