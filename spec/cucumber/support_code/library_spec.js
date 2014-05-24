@@ -31,6 +31,7 @@ describe("Cucumber.SupportCode.Library", function() {
     });
 
     it("creates a collection of step definitions", function() {
+      expect(Cucumber.Type.Collection).toHaveBeenCalled();
       expect(Cucumber.Type.Collection.callCount).toBe(5);
     });
 
@@ -278,25 +279,53 @@ describe("Cucumber.SupportCode.Library", function() {
         spyOnStub(aroundHookCollection, 'add');
       });
 
-      it("instructs the hooker to use the code as an around hook", function() {
-        library.defineAroundHook(code);
-        expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: []});
-        expect(aroundHookCollection.add).toHaveBeenCalledWith(aroundHook);
+      describe("define around hook", function() {
+        beforeEach(function() {
+          library.defineAroundHook(code);
+        });
+
+        it("creates a around hook with the code", function() {
+          expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: []});
+        });
+
+        it("adds the around hook to the around hook collection", function() {
+          expect(aroundHookCollection.add).toHaveBeenCalledWith(aroundHook);
+        });
       });
 
-      it("instructs the hooker to use the code as an around hook with a tag group", function() {
-        var tagGroup = createSpy("tag group");
-        library.defineAroundHook(tagGroup, code);
-        expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: [tagGroup]});
-        expect(aroundHookCollection.add).toHaveBeenCalledWith(aroundHook);
+      describe("define around hook with a tag group", function() {
+        var tagGroup;
+
+        beforeEach(function() {
+          tagGroup = createSpy("tag group");
+          library.defineAroundHook(tagGroup, code);
+        });
+
+        it("creates a around hook with the code", function() {
+          expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: [tagGroup]});
+        });
+
+        it("adds the around hook to the around hook collection", function() {
+          expect(aroundHookCollection.add).toHaveBeenCalledWith(aroundHook);
+        });
       });
 
-      it("instructs the hooker to use the code as an around hook with tag groups", function() {
-        var tagGroup1 = createSpy("tag group 1");
-        var tagGroup2 = createSpy("tag group 2");
-        library.defineAroundHook(tagGroup1, tagGroup2, code);
-        expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]});
-        expect(aroundHookCollection.add).toHaveBeenCalledWith(aroundHook);
+      describe("define around hook with tag groups", function() {
+        var tagGroup1, tagGroup2;
+
+        beforeEach(function() {
+          tagGroup1 = createSpy("tag group 1");
+          tagGroup2 = createSpy("tag group 2");
+          library.defineAroundHook(tagGroup1, tagGroup2, code);
+        });
+
+        it("creates a around hook with the code", function() {
+          expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]});
+        });
+
+        it("adds the around hook to the around hook collection", function() {
+          expect(aroundHookCollection.add).toHaveBeenCalledWith(aroundHook);
+        });
       });
     });
 
@@ -310,25 +339,53 @@ describe("Cucumber.SupportCode.Library", function() {
         spyOnStub(beforeHookCollection, 'add');
       });
 
-      it("instructs the hooker to use the code as an before hook", function() {
-        library.defineBeforeHook(code);
-        expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: []});
-        expect(beforeHookCollection.add).toHaveBeenCalledWith(hook);
+      describe("define before hook", function() {
+        beforeEach(function() {
+          library.defineBeforeHook(code);
+        });
+
+        it("creates a before hook with the code", function() {
+          expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: []});
+        });
+
+        it("adds the before hook to the before hook collection", function() {
+          expect(beforeHookCollection.add).toHaveBeenCalledWith(hook);
+        });
       });
 
-      it("instructs the hooker to use the code as an before hook with a tag group", function() {
-        var tagGroup = createSpy("tag group");
-        library.defineBeforeHook(tagGroup, code);
-        expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup]});
-        expect(beforeHookCollection.add).toHaveBeenCalledWith(hook);
+      describe("define before hook with a tag group", function() {
+        var tagGroup;
+
+        beforeEach(function() {
+          tagGroup = createSpy("tag group");
+          library.defineBeforeHook(tagGroup, code);
+        });
+
+        it("creates a before hook with the code", function() {
+          expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup]});
+        });
+
+        it("adds the before hook to the before hook collection", function() {
+          expect(beforeHookCollection.add).toHaveBeenCalledWith(hook);
+        });
       });
 
-      it("instructs the hooker to use the code as an before hook with tag groups", function() {
-        var tagGroup1 = createSpy("tag group 1");
-        var tagGroup2 = createSpy("tag group 2");
-        library.defineBeforeHook(tagGroup1, tagGroup2, code);
-        expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]});
-        expect(beforeHookCollection.add).toHaveBeenCalledWith(hook);
+      describe("define before hook with tag groups", function() {
+        var tagGroup1, tagGroup2;
+
+        beforeEach(function() {
+          tagGroup1 = createSpy("tag group 1");
+          tagGroup2 = createSpy("tag group 2");
+          library.defineBeforeHook(tagGroup1, tagGroup2, code);
+        });
+
+        it("creates a before hook with the code", function() {
+          expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]});
+        });
+
+        it("adds the before hook to the before hook collection", function() {
+          expect(beforeHookCollection.add).toHaveBeenCalledWith(hook);
+        });
       });
     });
 
@@ -342,25 +399,53 @@ describe("Cucumber.SupportCode.Library", function() {
         spyOnStub(afterHookCollection, 'add');
       });
 
-      it("instructs the hooker to use the code as an after hook", function() {
-        library.defineAfterHook(code);
-        expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: []});
-        expect(afterHookCollection.add).toHaveBeenCalledWith(hook);
+      describe("define after hook", function() {
+        beforeEach(function() {
+          library.defineAfterHook(code);
+        });
+
+        it("creates a after hook with the code", function() {
+          expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: []});
+        });
+
+        it("adds the after hook to the after hook collection", function() {
+          expect(afterHookCollection.add).toHaveBeenCalledWith(hook);
+        });
       });
 
-      it("instructs the hooker to use the code as an after hook with a tag group", function() {
-        var tagGroup = createSpy("tag group");
-        library.defineAfterHook(tagGroup, code);
-        expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup]});
-        expect(afterHookCollection.add).toHaveBeenCalledWith(hook);
+      describe("define after hook with a tag group", function() {
+        var tagGroup;
+
+        beforeEach(function() {
+          tagGroup = createSpy("tag group");
+          library.defineAfterHook(tagGroup, code);
+        });
+
+        it("creates a after hook with the code", function() {
+          expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup]});
+        });
+
+        it("adds the after hook to the after hook collection", function() {
+          expect(afterHookCollection.add).toHaveBeenCalledWith(hook);
+        });
       });
 
-      it("instructs the hooker to use the code as an after hook with tag groups", function() {
-        var tagGroup1 = createSpy("tag group 1");
-        var tagGroup2 = createSpy("tag group 2");
-        library.defineAfterHook(tagGroup1, tagGroup2, code);
-        expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]});
-        expect(afterHookCollection.add).toHaveBeenCalledWith(hook);
+      describe("define after hook with tag groups", function() {
+        var tagGroup1, tagGroup2;
+
+        beforeEach(function() {
+          tagGroup1 = createSpy("tag group 1");
+          tagGroup2 = createSpy("tag group 2");
+          library.defineAfterHook(tagGroup1, tagGroup2, code);
+        });
+
+        it("creates a after hook with the code", function() {
+          expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]});
+        });
+
+        it("adds the after hook to the after hook collection", function() {
+          expect(afterHookCollection.add).toHaveBeenCalledWith(hook);
+        });
       });
     });
   });
