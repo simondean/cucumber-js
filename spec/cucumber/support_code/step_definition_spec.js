@@ -94,7 +94,7 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
     beforeEach(function () {
       step             = createSpy("step");
       world            = createSpy("world");
-      scenario         = createSpyObj("scenario", ["getAttachments"]);
+      scenario         = createSpyWithStubs("scenario", {getAttachments: undefined});
       callback         = createSpy("callback");
       parameters       = createSpy("code execution parameters");
       exceptionHandler = createSpy("exception handler");
