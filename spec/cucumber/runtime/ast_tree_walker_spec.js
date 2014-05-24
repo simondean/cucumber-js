@@ -11,7 +11,7 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
     supportListeners   = [createSpy("First support listener"), createSpy("Second support listener")];
     spyOnStub(listeners, 'syncForEach').andCallFake(function(cb) { listeners.forEach(cb); });
     spyOnStub(supportListeners, 'syncForEach').andCallFake(function(cb) { supportListeners.forEach(cb); });
-    spyOnStub(supportCodeLibrary, 'getListeners').andCallFake(function() { return supportListeners; });
+    spyOnStub(supportCodeLibrary, 'getListeners').andReturn(supportListeners);
     treeWalker         = Cucumber.Runtime.AstTreeWalker(features, supportCodeLibrary, listeners);
   });
 
