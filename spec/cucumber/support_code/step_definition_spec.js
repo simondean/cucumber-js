@@ -374,7 +374,7 @@ describe("Cucumber.SupportCode.StepDefinition", function () {
 
       it("does not add the attachement contents to the parameter array", function () {
         stepDefinition.buildInvocationParameters(step, scenario, callback);
-        expect(matches.push.callCount).toBe(1);
+        expect(matches.push).toHaveBeenCalledNTimes(1);
       });
     });
 

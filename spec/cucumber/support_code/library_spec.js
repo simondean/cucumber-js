@@ -31,8 +31,7 @@ describe("Cucumber.SupportCode.Library", function() {
     });
 
     it("creates a collection of step definitions", function() {
-      expect(Cucumber.Type.Collection).toHaveBeenCalled();
-      expect(Cucumber.Type.Collection.callCount).toBe(5);
+      expect(Cucumber.Type.Collection).toHaveBeenCalledNTimes(5);
     });
 
     it("executes the raw support code", function() {
