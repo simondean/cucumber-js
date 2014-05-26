@@ -775,7 +775,7 @@ describe("Cucumber.Ast.Step", function() {
       step.execute(visitor, callback);
     });
 
-    it("looks up the step definition based on the step string", function() {
+    it("looks up the step definition", function() {
       expect(step.getStepDefinition).toHaveBeenCalledWith(visitor);
     });
 
