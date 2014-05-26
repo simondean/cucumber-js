@@ -2,33 +2,26 @@ require('../../support/spec_helper');
 
 describe("Cucumber.Api.Scenario", function() {
   var Cucumber = requireLib('cucumber');
-  var scenario, keyword, name, description, uri, line, tags, isFailed, isPending, isSuccessful, isUndefined;
+  var scenarioFailed, scenarioPending, scenarioSuccessful, scenarioUndefined, astTreeWalker;
+  var keyword, name, description, uri, line, tags, astScenario;
+  var scenario;
 
   beforeEach(function() {
-    keyword      = createSpy("scenario keyword");
-    name         = createSpy("scenario name");
-    description  = createSpy("scenario description");
-    uri          = createSpy("uri");
-    line         = createSpy("starting scenario line number");
-    tags         = createSpy("scenario tags");
-    isFailed     = createSpy("is failed");
-    isPending    = createSpy("is pending");
-    isSuccessful = createSpy("is successful");
-    isUndefined  = createSpy("is undefined");
-    scenario = Cucumber.Api.Scenario({
-      scenario: {
-        getKeyword: function() { return keyword; },
-        getName: function() { return name; },
-        getDescription: function() { return description; },
-        getUri: function() { return uri; },
-        getLine: function() { return line; },
-        getTags: function() { return tags; }
-      },
-      isFailed: isFailed,
-      isPending: isPending,
-      isSuccessful: isSuccessful,
-      isUndefined: isUndefined
-    });
+    scenarioFailed     = createSpy("scenario failed");
+    scenarioPending    = createSpy("scenario pending");
+    scenarioSuccessful = createSpy("scenario successful");
+    scenarioUndefined  = createSpy("scenario undefined");
+    attachments        = createSpy("attachments");
+    astTreeWalker      = createSpyWithStubs("ast scenario", { isScenarioFailed: scenarioFailed, isScenarioPending: scenarioPending, isScenarioSuccessful: scenarioSuccessful, isScenarioUndefined: scenarioUndefined, getAttachments: attachments });
+    keyword            = createSpy("scenario keyword");
+    name               = createSpy("scenario name");
+    description        = createSpy("scenario description");
+    uri                = createSpy("scenario uri");
+    line               = createSpy("scenario starting line number");
+    tags               = createSpy("scenario tags");
+    astScenario        = createSpyWithStubs("ast scenario", { getKeyword: keyword, getName: name, getDescription: description, getUri: uri, getLine: line, getTags: tags });
+
+    scenario = Cucumber.Api.Scenario(astTreeWalker, astScenario);
   });
 
   describe("getKeyword()", function() {
@@ -67,19 +60,33 @@ describe("Cucumber.Api.Scenario", function() {
     });
   });
 
-  it("is failed", function() {
-    expect(scenario.isFailed()).toBe(isFailed);
+  describe("isSuccessful()", function() {
+    it("returns whether the scenario is successful", function() {
+      expect(scenario.isSuccessful()).toBe(scenarioSuccessful);
+    });
   });
 
-  it("is pending", function() {
-    expect(scenario.isPending()).toBe(isPending);
+  describe("isFailed()", function() {
+    it("returns whether the scenario has failed", function() {
+      expect(scenario.isFailed()).toBe(scenarioFailed);
+    });
   });
 
-  it("is successful", function () {
-    expect(scenario.isSuccessful()).toBe(isSuccessful);
+  describe("isPending()", function() {
+    it("returns whether the scenario is pending", function() {
+      expect(scenario.isPending()).toBe(scenarioPending);
+    });
   });
 
-  it("is undefined", function() {
-    expect(scenario.isUndefined()).toBe(isUndefined);
+  describe("isUndefined()", function() {
+    it("returns whether the scenario is undefined", function() {
+      expect(scenario.isUndefined()).toBe(scenarioUndefined);
+    });
+  });
+
+  describe("getAttachments()", function() {
+    it("returns any attachments created by the current step", function() {
+      expect(scenario.getAttachments()).toBe(attachments);
+    });
   });
 });

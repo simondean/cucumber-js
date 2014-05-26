@@ -10,19 +10,12 @@ describe("Cucumber.SupportCode.Library", function() {
     rawSupportCode           = createSpy("Raw support code");
     worldConstructor         = createSpy("world constructor");
     spyOn(Cucumber.SupportCode, 'WorldConstructor').andReturn(worldConstructor);
-    listenerCollection       = createSpy("listenerCollection");
-    stepDefinitionCollection = createSpy("stepDefinitionCollection");
-    aroundHookCollection     = createSpy("aroundHookCollection");
-    beforeHookCollection     = createSpy("beforeHookCollection");
-    afterHookCollection      = createSpy("afterHookCollection");
-    var collections          = [listenerCollection, stepDefinitionCollection, aroundHookCollection, beforeHookCollection, afterHookCollection];
-    var collectionIndex      = 0;
-    spyOn(Cucumber.Type, 'Collection').andCallFake(function() {
-      if (collectionIndex < collections.length)
-        return collections[collectionIndex++];
-      else
-        return createSpy("collection" + collectionIndex++);
-    });
+    listenerCollection       = createSpy("listener collection");
+    stepDefinitionCollection = createSpy("step definition collection");
+    aroundHookCollection     = createSpy("around hook collection");
+    beforeHookCollection     = createSpy("before hook collection");
+    afterHookCollection      = createSpy("after hook collection");
+    spyOn(Cucumber.Type, 'Collection').andReturnSeveral([listenerCollection, stepDefinitionCollection, aroundHookCollection, beforeHookCollection, afterHookCollection]);
   });
 
   describe("constructor", function() {

@@ -282,7 +282,7 @@ Feature: Attachments
       """
       var hooks = function () {
         this.Around(function(scenario, runScenario) {
-          runScenario(function(scenario, callback) {
+          runScenario(function(callback) {
             scenario.attach("text");
             callback();
           });
