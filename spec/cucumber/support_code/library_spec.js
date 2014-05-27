@@ -5,6 +5,7 @@ describe("Cucumber.SupportCode.Library", function() {
   var library, rawSupportCode;
   var worldConstructor;
   var listenerCollection, stepDefinitionCollection, aroundHookCollection, beforeHookCollection, afterHookCollection;
+  var collectionSpy;
 
   beforeEach(function() {
     rawSupportCode           = createSpy("Raw support code");
@@ -15,7 +16,7 @@ describe("Cucumber.SupportCode.Library", function() {
     aroundHookCollection     = createSpy("around hook collection");
     beforeHookCollection     = createSpy("before hook collection");
     afterHookCollection      = createSpy("after hook collection");
-    spyOn(Cucumber.Type, 'Collection').andReturnSeveral([listenerCollection, stepDefinitionCollection, aroundHookCollection, beforeHookCollection, afterHookCollection]);
+    collectionSpy            = spyOn(Cucumber.Type, 'Collection').andReturnSeveral([listenerCollection, stepDefinitionCollection, aroundHookCollection, beforeHookCollection, afterHookCollection]);
   });
 
   describe("constructor", function() {
@@ -438,6 +439,124 @@ describe("Cucumber.SupportCode.Library", function() {
         it("adds the after hook to the after hook collection", function() {
           expect(afterHookCollection.add).toHaveBeenCalledWith(hook);
         });
+      });
+    });
+
+    describe("lookupAroundHooksByScenario()", function() {
+      var returnValue, scenario, matchingHooks;
+
+      beforeEach(function() {
+        scenario      = createSpy("scenario");
+        matchingHooks = createSpy("hooks");
+        spyOn(library, "lookupHooksByScenario").andReturn(matchingHooks);
+
+        returnValue = library.lookupAroundHooksByScenario(scenario);
+      });
+
+      it("looks up the around hooks by scenario", function() {
+        expect(library.lookupHooksByScenario).toHaveBeenCalledWith(aroundHookCollection, scenario);
+      });
+
+      it("returns the matching hooks", function() {
+        expect(returnValue).toBe(matchingHooks);
+      });
+    });
+
+    describe("lookupBeforeHooksByScenario()", function() {
+      var returnValue, scenario, matchingHooks;
+
+      beforeEach(function() {
+        scenario      = createSpy("scenario");
+        matchingHooks = createSpy("hooks");
+        spyOn(library, "lookupHooksByScenario").andReturn(matchingHooks);
+
+        returnValue = library.lookupBeforeHooksByScenario(scenario);
+      });
+
+      it("looks up the around hooks by scenario", function() {
+        expect(library.lookupHooksByScenario).toHaveBeenCalledWith(beforeHookCollection, scenario);
+      });
+
+      it("returns the matching hooks", function() {
+        expect(returnValue).toBe(matchingHooks);
+      });
+    });
+
+    describe("lookupAfterHooksByScenario()", function() {
+      var returnValue, scenario, matchingHooks;
+
+      beforeEach(function() {
+        scenario      = createSpy("scenario");
+        matchingHooks = createSpy("hooks");
+        spyOn(library, "lookupHooksByScenario").andReturn(matchingHooks);
+
+        returnValue = library.lookupAfterHooksByScenario(scenario);
+      });
+
+      it("looks up the around hooks by scenario", function() {
+        expect(library.lookupHooksByScenario).toHaveBeenCalledWith(afterHookCollection, scenario);
+      });
+
+      it("returns the matching hooks", function() {
+        expect(returnValue).toBe(matchingHooks);
+      });
+    });
+
+    describe("lookupHooksByScenario()", function() {
+      var hookCollection, scenario, matchingHookCollection, returnValue;
+
+      beforeEach(function() {
+        hookCollection         = createSpyWithStubs("hook collection", {syncForEach: undefined});
+        scenario               = createSpy("scenario");
+        matchingHookCollection = createSpyWithStubs("matching hook collection", {add: undefined});
+        collectionSpy.andReturn(matchingHookCollection);
+
+        returnValue = library.lookupHooksByScenario(hookCollection, scenario);
+      });
+
+      it("iterates over the hooks", function() {
+        expect(hookCollection.syncForEach).toHaveBeenCalled();
+        expect(hookCollection.syncForEach).toHaveBeenCalledWithAFunctionAsNthParameter(1);
+      });
+
+      it("returns the matching hooks", function() {
+        expect(returnValue).toBe(matchingHookCollection);
+      });
+
+      describe("for each hook in the collection", function() {
+        var hook, syncForEachUserFunction;
+
+        beforeEach(function() {
+          hook = createSpyWithStubs("hook", {appliesToScenario: undefined});
+          syncForEachUserFunction = hookCollection.syncForEach.mostRecentCall.args[0];
+        });
+
+        it("checks whether the hook applies to the scenario", function() {
+          syncForEachUserFunction(hook);
+          expect(hook.appliesToScenario).toHaveBeenCalledWith(scenario);
+        });
+
+        describe("when the hook matches the scenario", function() {
+          beforeEach(function() {
+            spyOnStub(hook, "appliesToScenario").andReturn(true);
+            syncForEachUserFunction(hook);
+          });
+
+          it("adds the hook to the collection of matching hooks", function() {
+            expect(matchingHookCollection.add).toHaveBeenCalledWith(hook);
+          });
+        })
+
+        describe("when the hook does not match the scenario", function() {
+          beforeEach(function() {
+            spyOnStub(hook, "appliesToScenario").andReturn(false);
+            syncForEachUserFunction(hook);
+          });
+
+          it("adds the hook to the collection of matching hooks", function() {
+            expect(matchingHookCollection.add).not.toHaveBeenCalledWith(hook);
+          });
+        })
       });
     });
   });
