@@ -611,12 +611,12 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
     var stepResult, callback, event, payload;
 
     beforeEach(function() {
-      stepResult = createSpyWithStubs("Step result", {isPending: undefined, isFailed: undefined});
+      stepResult = createSpyWithStubs("Step result", {isFailed: undefined, isPending: undefined});
       callback   = createSpy("Callback");
       event      = createSpy("Event");
       payload    = {stepResult: stepResult};
       spyOn(treeWalker, 'broadcastEvent');
-      spyOn(treeWalker, 'witnessPendingStep');
+      spyOn(treeWalker, 'witnessFailedStep');
       spyOn(Cucumber.Runtime.AstTreeWalker, 'Event').andReturn(event);
     });
 
@@ -630,57 +630,57 @@ describe("Cucumber.Runtime.AstTreeWalker", function() {
       expect(treeWalker.broadcastEvent).toHaveBeenCalledWith(event, callback);
     });
 
-    it("checks whether the step was pending or not", function() {
+    it("checks whether the step failed or not", function() {
       treeWalker.visitStepResult(stepResult, callback);
-      expect(stepResult.isPending).toHaveBeenCalled();
+      expect(stepResult.isFailed).toHaveBeenCalled();
     });
 
-    describe("when the step was pending", function() {
+    describe("when the step failed", function() {
       beforeEach(function() {
-        stepResult.isPending.andReturn(true);
+        stepResult.isFailed.andReturn(true);
       });
 
-      it("witnesses a pending step", function() {
+      it("witnesses a failed step", function() {
         treeWalker.visitStepResult(stepResult, callback);
-        expect(treeWalker.witnessPendingStep).toHaveBeenCalled();
+        expect(treeWalker.witnessFailedStep).toHaveBeenCalled();
       });
     });
 
-    describe("when the step was not pending", function() {
+    describe("when the step did not fail", function() {
       beforeEach(function() {
-        stepResult.isPending.andReturn(false);
-        spyOn(treeWalker, 'witnessFailedStep');
+        stepResult.isFailed.andReturn(false);
+        spyOn(treeWalker, 'witnessPendingStep');
       });
 
-      it("does not witness a pending step", function() {
+      it("does not witness a failed step", function() {
         treeWalker.visitStepResult(stepResult, callback);
-        expect(treeWalker.witnessPendingStep).not.toHaveBeenCalled();
+        expect(treeWalker.witnessFailedStep).not.toHaveBeenCalled();
       });
 
-      it("checks whether the step has failed or not", function() {
+      it("checks whether the step was pending or not", function() {
         treeWalker.visitStepResult(stepResult, callback);
-        expect(stepResult.isFailed).toHaveBeenCalled();
+        expect(stepResult.isPending).toHaveBeenCalled();
       });
 
-      describe("when the step has failed", function() {
+      describe("when the step was pending", function() {
         beforeEach(function() {
-          stepResult.isFailed.andReturn(true);
+          stepResult.isPending.andReturn(true);
         });
 
-        it("witnesses a failed step", function() {
+        it("witnesses a pending step", function() {
           treeWalker.visitStepResult(stepResult, callback);
-          expect(treeWalker.witnessFailedStep).toHaveBeenCalled();
+          expect(treeWalker.witnessPendingStep).toHaveBeenCalled();
         });
       });
 
-      describe("when the step has not failed", function() {
+      describe("when the step was not pending", function() {
         beforeEach(function() {
-          stepResult.isFailed.andReturn(false);
+          stepResult.isPending.andReturn(false);
         });
 
-        it("does not witness a failed step", function() {
+        it("does not witness a pending step", function() {
           treeWalker.visitStepResult(stepResult, callback);
-          expect(treeWalker.witnessFailedStep).not.toHaveBeenCalled();
+          expect(treeWalker.witnessPendingStep).not.toHaveBeenCalled();
         });
       });
     });
