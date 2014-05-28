@@ -438,3 +438,135 @@ Feature: Environment Hooks
     | fail_approach     |
     | callback('Fail'); |
     | callback.fail();  |
+
+  Scenario: Hooks still execute after a failure
+    Given a file named "features/a.feature" with:
+      """
+      Feature: some feature
+
+      Scenario: I've declared one step and it is passing
+          Given This step is passing
+      """
+    And a file named "features/step_definitions/cucumber_steps.js" with:
+      """
+      var cucumberSteps = function() {
+        this.Given(/^This step is passing$/, function(callback) { callback(); });
+      };
+      module.exports = cucumberSteps;
+      """
+    And a file named "features/support/hooks.js" with:
+      """
+      var hooks = function () {
+        this.Around(function(scenario, runScenario) {
+          runScenario("fail", function(callback) {
+            callback();
+          });
+        });
+
+        this.Around(function(scenario, runScenario) {
+          runScenario(function(callback) {
+            callback();
+          });
+        });
+
+        this.Before(function(scenario, callback) {
+          callback();
+        });
+
+        this.After(function(scenario, callback) {
+          callback();
+        });
+      };
+
+      module.exports = hooks;
+      """
+    When I run `cucumber.js -f json`
+    Then it outputs this json:
+      """
+      [
+        {
+          "id": "some-feature",
+          "name": "some feature",
+          "description": "",
+          "line": 1,
+          "keyword": "Feature",
+          "uri": "<current-directory>/features/a.feature",
+          "elements": [
+            {
+              "name": "I've declared one step and it is passing",
+              "id": "some-feature;i've-declared-one-step-and-it-is-passing",
+              "line": 3,
+              "keyword": "Scenario",
+              "description": "",
+              "type": "scenario",
+              "steps": [
+                {
+                  "name": "scenario",
+                  "keyword": "Around ",
+                  "result": {
+                    "error_message": "<error-message>",
+                    "duration": "<duration>",
+                    "status": "failed"
+                  },
+                  "match": {}
+                },
+                {
+                  "name": "scenario",
+                  "keyword": "Around ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "name": "scenario",
+                  "keyword": "Before ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "name": "This step is passing",
+                  "line": 4,
+                  "keyword": "Given ",
+                  "result": {
+                    "status": "skipped"
+                  },
+                  "match": {}
+                },
+                {
+                  "name": "scenario",
+                  "keyword": "After ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "name": "scenario",
+                  "keyword": "Around ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "name": "scenario",
+                  "keyword": "Around ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+      """
