@@ -507,3 +507,85 @@ Feature: Attachments
         }
       ]
       """
+  Scenario: Attach from a step definition
+    Given a file named "features/a.feature" with:
+      """
+      Feature: some feature
+
+      Scenario: I've declared one step and it is passing
+          Given This step is passing
+      """
+    And a file named "features/step_definitions/cucumber_steps.js" with:
+      """
+      var cucumberSteps = function() {
+        this.Given(/^This step is passing$/, function(callback) {
+          var world = this;
+          world.scenario.attach("text");
+          callback();
+        });
+      };
+      module.exports = cucumberSteps;
+      """
+    And a file named "features/support/hooks.js" with:
+      """
+      var hooks = function () {
+        this.Before(function(scenario, callback) {
+          var world = this;
+          world.scenario = scenario;
+          callback();
+        });
+      };
+
+      module.exports = hooks;
+      """
+    When I run `cucumber.js -f json`
+    Then it outputs this json:
+      """
+      [
+        {
+          "id": "some-feature",
+          "name": "some feature",
+          "description": "",
+          "line": 1,
+          "keyword": "Feature",
+          "uri": "<current-directory>/features/a.feature",
+          "elements": [
+            {
+              "name": "I've declared one step and it is passing",
+              "id": "some-feature;i've-declared-one-step-and-it-is-passing",
+              "line": 3,
+              "keyword": "Scenario",
+              "description": "",
+              "type": "scenario",
+              "steps": [
+                {
+                  "name": "scenario",
+                  "keyword": "Before ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "name": "This step is passing",
+                  "line": 4,
+                  "keyword": "Given ",
+                  "result": {
+                    "embeddings": [
+                      {
+                        "mime_type": "text/plain",
+                        "data": "text"
+                      }
+                    ],
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+      """
