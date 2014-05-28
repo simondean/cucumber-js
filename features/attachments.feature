@@ -47,7 +47,7 @@ Feature: Attachments
               "type": "scenario",
               "steps": [
                 {
-                  "name": "hook",
+                  "name": "scenario",
                   "keyword": "Before ",
                   "result": {
                     "embeddings": [
@@ -142,7 +142,7 @@ Feature: Attachments
               "type": "scenario",
               "steps": [
                 {
-                  "name": "hook",
+                  "name": "scenario",
                   "keyword": "Before ",
                   "result": {
                     "embeddings": [
@@ -223,7 +223,7 @@ Feature: Attachments
               "type": "scenario",
               "steps": [
                 {
-                  "name": "hook",
+                  "name": "scenario",
                   "keyword": "Around ",
                   "result": {
                     "embeddings": [
@@ -248,7 +248,7 @@ Feature: Attachments
                   "match": {}
                 },
                 {
-                  "name": "hook",
+                  "name": "scenario",
                   "keyword": "Around ",
                   "result": {
                     "duration": "<duration>",
@@ -312,7 +312,7 @@ Feature: Attachments
               "type": "scenario",
               "steps": [
                 {
-                  "name": "hook",
+                  "name": "scenario",
                   "keyword": "Around ",
                   "result": {
                     "duration": "<duration>",
@@ -331,7 +331,7 @@ Feature: Attachments
                   "match": {}
                 },
                 {
-                  "name": "hook",
+                  "name": "scenario",
                   "keyword": "Around ",
                   "result": {
                     "embeddings": [
@@ -399,7 +399,7 @@ Feature: Attachments
               "type": "scenario",
               "steps": [
                 {
-                  "name": "hook",
+                  "name": "scenario",
                   "keyword": "Before ",
                   "result": {
                     "embeddings": [
@@ -487,7 +487,7 @@ Feature: Attachments
                   "match": {}
                 },
                 {
-                  "name": "hook",
+                  "name": "scenario",
                   "keyword": "After ",
                   "result": {
                     "embeddings": [
