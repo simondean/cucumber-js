@@ -1415,7 +1415,7 @@ Feature: JSON Formatter
       ]
       """
 
-  Scenario: output JSON for a feature with one scenario outline with two examples
+  Scenario: output JSON for a feature with one scenario outline with an examples table with two rows
     Given a file named "features/a.feature" with:
       """
       Feature: some feature
@@ -1492,7 +1492,87 @@ Feature: JSON Formatter
       ]
       """
 
-  Scenario: output JSON for a feature with one scenario outline with two examples and before, after and around hooks
+  Scenario: output JSON for a feature with one scenario outline with two examples tables
+    Given a file named "features/a.feature" with:
+      """
+      Feature: some feature
+
+        Scenario Outline: I've declared one step which passes
+          Given This <instance> step is passing
+
+        Examples:
+          | instance |
+          | first    |
+
+        Examples:
+          | instance |
+          | second   |
+      """
+    And a file named "features/step_definitions/cucumber_steps.js" with:
+      """
+      var cucumberSteps = function() {
+        this.Given(/^This (first|second) step is passing$/, function(instance, callback) { callback(); });
+      };
+      module.exports = cucumberSteps;
+      """
+    When I run `cucumber.js -f json`
+    Then it outputs this json:
+      """
+      [
+        {
+          "id": "some-feature",
+          "name": "some feature",
+          "description": "",
+          "line": 1,
+          "keyword": "Feature",
+          "uri": "/home/simondean/code/cucumber/cucumber-js/tmp/cucumber-js-sandbox/features/a.feature",
+          "elements": [
+            {
+              "name": "I've declared one step which passes",
+              "id": "some-feature;i've-declared-one-step-which-passes",
+              "line": 3,
+              "keyword": "Scenario",
+              "description": "",
+              "type": "scenario",
+              "steps": [
+                {
+                  "name": "This first step is passing",
+                  "line": 4,
+                  "keyword": "Given ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                }
+              ]
+            },
+            {
+              "name": "I've declared one step which passes",
+              "id": "some-feature;i've-declared-one-step-which-passes",
+              "line": 3,
+              "keyword": "Scenario",
+              "description": "",
+              "type": "scenario",
+              "steps": [
+                {
+                  "name": "This second step is passing",
+                  "line": 4,
+                  "keyword": "Given ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+      """
+
+  Scenario: output JSON for a feature with one scenario outline with an examples table with two rows and before, after and around hooks
     Given a file named "features/a.feature" with:
       """
       Feature: some feature
@@ -1553,9 +1633,45 @@ Feature: JSON Formatter
               "type": "scenario",
               "steps": [
                 {
+                  "keyword": "Around ",
+                  "hidden": true,
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "keyword": "Before ",
+                  "hidden": true,
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
                   "name": "This first step is passing",
                   "line": 4,
                   "keyword": "Given ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "keyword": "After ",
+                  "hidden": true,
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "keyword": "Around ",
+                  "hidden": true,
                   "result": {
                     "duration": "<duration>",
                     "status": "passed"
@@ -1573,9 +1689,45 @@ Feature: JSON Formatter
               "type": "scenario",
               "steps": [
                 {
+                  "keyword": "Around ",
+                  "hidden": true,
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "keyword": "Before ",
+                  "hidden": true,
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
                   "name": "This second step is passing",
                   "line": 4,
                   "keyword": "Given ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "keyword": "After ",
+                  "hidden": true,
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "keyword": "Around ",
+                  "hidden": true,
                   "result": {
                     "duration": "<duration>",
                     "status": "passed"

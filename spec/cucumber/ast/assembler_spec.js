@@ -103,7 +103,7 @@ describe("Cucumber.Ast.Assembler", function() {
     var feature, featureTags, element;
 
     beforeEach(function() {
-      element     = createSpyWithStubs("AST element", {addInheritedtags: null});
+      element     = createSpyWithStubs("AST element", {addInheritedTags: null});
       featureTags = createSpy("feature tags");
       feature     = createSpyWithStubs("current feature", {getTags: featureTags});
       spyOn(assembler, 'getCurrentFeature').andReturn(feature);
@@ -121,7 +121,7 @@ describe("Cucumber.Ast.Assembler", function() {
 
     it("adds the feature tags to the element", function() {
       assembler.applyCurrentFeatureTagsToElement(element);
-      expect(element.addInheritedtags).toHaveBeenCalledWith(featureTags);
+      expect(element.addInheritedTags).toHaveBeenCalledWith(featureTags);
     });
   });
 
