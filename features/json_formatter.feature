@@ -1541,6 +1541,89 @@ Feature: JSON Formatter
       ]
       """
 
+  Scenario: output JSON for a feature with one scenario outline with an examples table with two rows
+    Given a file named "features/a.feature" with:
+      """
+      Feature: some feature
+        Background:
+            Given This applies to all scenarios
+
+        Scenario Outline: I've declared one step which passes
+          Given This <instance> step is passing
+
+        Examples:
+          | instance |
+          | first    |
+      """
+    And a file named "features/step_definitions/cucumber_steps.js" with:
+      """
+      var cucumberSteps = function() {
+        this.Given(/^This applies to all scenarios$/, function(callback) { callback(); });
+        this.Given(/^This (first|second) step is passing$/, function(instance, callback) { callback(); });
+      };
+      module.exports = cucumberSteps;
+      """
+    When I run `cucumber.js -f json`
+    Then it outputs this json:
+      """
+      [
+        {
+          "id": "some-feature",
+          "name": "some feature",
+          "description": "",
+          "line": 1,
+          "keyword": "Feature",
+          "uri": "<current-directory>/features/a.feature",
+          "elements": [
+            {
+              "name": "",
+              "keyword": "Background",
+              "description": "",
+              "type": "background",
+              "line": 2,
+              "steps": [
+                {
+                  "name": "This applies to all scenarios",
+                  "line": 3,
+                  "keyword": "Given "
+                }
+              ]
+            },
+            {
+              "name": "I've declared one step which passes",
+              "id": "some-feature;i've-declared-one-step-which-passes",
+              "line": 5,
+              "keyword": "Scenario",
+              "description": "",
+              "type": "scenario",
+              "steps": [
+                {
+                  "name": "This applies to all scenarios",
+                  "line": 3,
+                  "keyword": "Given ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                },
+                {
+                  "name": "This first step is passing",
+                  "line": 6,
+                  "keyword": "Given ",
+                  "result": {
+                    "duration": "<duration>",
+                    "status": "passed"
+                  },
+                  "match": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+      """
+
   Scenario: output JSON for a feature with one scenario outline with two examples tables
     Given a file named "features/a.feature" with:
       """
