@@ -57,13 +57,13 @@ describe("Cucumber.Ast.Feature", function () {
     });
   });
 
-  describe("getBackground() [addBackground()]", function () {
+  describe("getBackground() [setBackground()]", function () {
     describe("when a background was previously added", function () {
       var background;
 
       beforeEach(function () {
         background = createSpy("background");
-        feature.addBackground(background);
+        feature.setBackground(background);
       });
 
       it("returns the background", function () {
@@ -79,13 +79,13 @@ describe("Cucumber.Ast.Feature", function () {
   });
 
   describe("hasBackground()", function () {
-    it("returns true when a background was added", function () {
+    it("returns true when a background was set", function () {
       var background = createSpy("background");
-      feature.addBackground(background);
+      feature.setBackground(background);
       expect(feature.hasBackground()).toBeTruthy();
     });
 
-    it("returns false when no background was added", function () {
+    it("returns false when no background was set", function () {
       expect(feature.hasBackground()).toBeFalsy();
     });
   });
