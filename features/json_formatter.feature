@@ -1415,6 +1415,55 @@ Feature: JSON Formatter
       ]
       """
 
+  Scenario: output JSON for a feature with one scenario outline with no examples tables
+    Given a file named "features/a.feature" with:
+      """
+      Feature: some feature
+
+        Scenario Outline: I've declared one step which passes
+          Given This <instance> step is passing
+      """
+    When I run `cucumber.js -f json`
+    Then it outputs this json:
+      """
+      [
+        {
+          "id": "some-feature",
+          "name": "some feature",
+          "description": "",
+          "line": 1,
+          "keyword": "Feature",
+          "uri": "<current-directory>/features/a.feature"
+        }
+      ]
+      """
+
+  Scenario: output JSON for a feature with one scenario outline with an examples table with no rows
+    Given a file named "features/a.feature" with:
+      """
+      Feature: some feature
+
+        Scenario Outline: I've declared one step which passes
+          Given This <instance> step is passing
+
+        Examples:
+          | instance |
+      """
+    When I run `cucumber.js -f json`
+    Then it outputs this json:
+      """
+      [
+        {
+          "id": "some-feature",
+          "name": "some feature",
+          "description": "",
+          "line": 1,
+          "keyword": "Feature",
+          "uri": "<current-directory>/features/a.feature"
+        }
+      ]
+      """
+
   Scenario: output JSON for a feature with one scenario outline with an examples table with two rows
     Given a file named "features/a.feature" with:
       """
