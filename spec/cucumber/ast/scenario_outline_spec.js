@@ -22,6 +22,12 @@ describe("Cucumber.Ast.ScenarioOutline", function() {
     scenarioOutline = Cucumber.Ast.ScenarioOutline(keyword, name, description, uri, line);
   });
 
+  describe("isScenarioOutline()", function() {
+    it("returns true", function() {
+      expect(scenarioOutline.isScenarioOutline()).toBeTruthy();
+    });
+  });
+
   describe("getExamples() [addExamples()]", function() {
     it("returns an empty set when no examples have been set", function() {
       expect(scenarioOutline.getExamples().length()).toEqual(0);
