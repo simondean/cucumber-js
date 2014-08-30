@@ -1574,7 +1574,7 @@ Feature: JSON Formatter
           "description": "",
           "line": 1,
           "keyword": "Feature",
-          "uri": "/home/simondean/code/cucumber/cucumber-js/tmp/cucumber-js-sandbox/features/a.feature",
+          "uri": "<current-directory>/features/a.feature",
           "elements": [
             {
               "name": "I've declared one step which passes",
